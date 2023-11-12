@@ -1,7 +1,6 @@
 package io.dave.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,24 +21,22 @@ public class CompanyServiceImpl implements ICompanyService {
 		return repo.save(company).getId();
 	}
 
+	@Override
 	public Company updateCompany(Company company) {
-		
-		return repo.findById(company.getId())
-		.map(companyExisting -> {
-			return repo.save(companyExisting);
-		}).orElseThrow(() -> new CompanyNotFoundException("Company with ID " + company.getId()+ " not found"));
+		return repo.findById(company.getId()).map(existingCompany -> repo.save(existingCompany))
+				.orElseThrow(() -> new CompanyNotFoundException("Company not found with ID: " + company.getId()));
 	}
 
 	@Override
 	public Company getOneCompany(Long id) {
 		return repo.findById(id)
-	            .orElseThrow(() -> new CompanyNotFoundException("Company with ID " + id + " not found"));
+				.orElseThrow(() -> new CompanyNotFoundException("Company with ID " + id + " not found"));
 	}
 
 	@Override
 	public List<Company> getAllCompanies() {
-		return Optional.ofNullable(repo.findAll()).filter(companies -> !companies.isEmpty())
-				.orElseThrow(() -> new CompanyNotFoundException("No companies found."));
+		return repo.findAll();
+
 	}
-	
+
 }
